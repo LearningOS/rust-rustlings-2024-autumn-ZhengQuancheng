@@ -2,7 +2,6 @@
 	heap
 	This question requires you to implement a binary heap function
 */
-// I AM NOT DONE
 
 use std::cmp::Ord;
 use std::default::Default;
@@ -37,7 +36,15 @@ where
     }
 
     pub fn add(&mut self, value: T) {
-        //TODO
+        self.items.push(value);
+        self.count += 1;
+        let mut child_idx = self.count;
+        let mut parent_idx = self.parent_idx(child_idx);
+        while parent_idx > 0 && (self.comparator)(&self.items[child_idx], &self.items[parent_idx]) {
+            self.items.swap(child_idx, parent_idx);
+            child_idx = parent_idx;
+            parent_idx = self.parent_idx(child_idx);
+        }
     }
 
     fn parent_idx(&self, idx: usize) -> usize {
@@ -57,8 +64,22 @@ where
     }
 
     fn smallest_child_idx(&self, idx: usize) -> usize {
-        //TODO
-		0
+        match self.children_present(idx) {
+            true => {
+                let left_idx = self.left_child_idx(idx);
+                let right_idx = self.right_child_idx(idx);
+                if right_idx <= self.count {
+                    if (self.comparator)(&self.items[left_idx], &self.items[right_idx]) {
+                        left_idx
+                    } else {
+                        right_idx
+                    }
+                } else {
+                    left_idx
+                }
+            }
+            false => 0,
+        }
     }
 }
 
@@ -84,8 +105,22 @@ where
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
-        //TODO
-		None
+        if self.is_empty() {
+            return None;
+        }
+        let root = self.items.swap_remove(1);
+        self.count -= 1;
+        if self.is_empty() {
+            return Some(root);
+        }
+        let mut parent_idx = 1;
+        let mut child_idx = self.smallest_child_idx(parent_idx);
+        while child_idx > 0 && (self.comparator)(&self.items[child_idx], &self.items[parent_idx]) {
+            self.items.swap(child_idx, parent_idx);
+            parent_idx = child_idx;
+            child_idx = self.smallest_child_idx(parent_idx);
+        }
+        Some(root)
     }
 }
 

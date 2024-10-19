@@ -3,7 +3,6 @@
 	This problem requires you to implement a basic interface for a binary tree
 */
 
-//I AM NOT DONE
 use std::cmp::Ordering;
 use std::fmt::Debug;
 
@@ -37,6 +36,21 @@ where
             right: None,
         }
     }
+
+    // Search for a value in the tree
+    fn search(&self, value: T) -> bool {
+        match value.cmp(&self.value) {
+            Ordering::Less => match self.left {
+                Some(ref left) => left.search(value),
+                None => false,
+            },
+            Ordering::Greater => match self.right {
+                Some(ref right) => right.search(value),
+                None => false,
+            },
+            Ordering::Equal => true,
+        }
+    }
 }
 
 impl<T> BinarySearchTree<T>
@@ -50,13 +64,22 @@ where
 
     // Insert a value into the BST
     fn insert(&mut self, value: T) {
-        //TODO
+        match self.root {
+            None => {
+                self.root = Some(Box::new(TreeNode::new(value)));
+            }
+            Some(ref mut root) => {
+                root.insert(value);
+            }
+        }
     }
 
     // Search for a value in the BST
     fn search(&self, value: T) -> bool {
-        //TODO
-        true
+        match self.root {
+            None => false,
+            Some(ref root) => root.search(value),
+        }
     }
 }
 
@@ -66,10 +89,31 @@ where
 {
     // Insert a node into the tree
     fn insert(&mut self, value: T) {
-        //TODO
+        match value.cmp(&self.value) {
+            Ordering::Less => {
+                match self.left {
+                    None => {
+                        self.left = Some(Box::new(TreeNode::new(value)));
+                    }
+                    Some(ref mut left) => {
+                        left.insert(value);
+                    }
+                }
+            }
+            Ordering::Greater => {
+                match self.right {
+                    None => {
+                        self.right = Some(Box::new(TreeNode::new(value)));
+                    }
+                    Some(ref mut right) => {
+                        right.insert(value);
+                    }
+                }
+            }
+            Ordering::Equal => {}
+        }
     }
 }
-
 
 #[cfg(test)]
 mod tests {
